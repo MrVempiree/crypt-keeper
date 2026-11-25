@@ -1,0 +1,1 @@
+{"description":"Password strength analyzer + generator web app — 100% client-side.","name":"crypt-keeper","private":true,"scripts":{"test":"node --test"},"type":"module","version":"1.0.0"}

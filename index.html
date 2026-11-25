@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="crypt-keeper — password strength analyzer + generator. 100% client-side; passwords never leave your browser." />
+  <title>crypt-keeper — Password Strength Analyzer + Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="brand">
+      <svg class="bat-logo" viewBox="0 0 120 60" aria-hidden="true" focusable="false">
+        <path d="M60 18 C55 10 48 8 42 12 C36 4 24 2 10 10 C18 12 20 18 18 24 C24 22 30 26 32 32 C36 26 44 26 48 32 C50 38 55 40 60 36 C65 40 70 38 72 32 C76 26 84 26 88 32 C90 26 96 22 102 24 C100 18 102 12 110 10 C96 2 84 4 78 12 C72 8 65 10 60 18 Z" fill="currentColor"/>
+        <circle cx="55" cy="22" r="2" fill="#0a0a0f"/>
+        <circle cx="65" cy="22" r="2" fill="#0a0a0f"/>
+      </svg>
+      <div>
+        <h1>crypt-keeper</h1>
+        <p class="tagline">Password strength analyzer + generator — guarded by the Vempire.</p>
+      </div>
+    </div>
+    <p class="privacy-badge">100% client-side · nothing stored · nothing sent</p>
+  </header>
+
+  <main class="layout">
+    <section class="card glass" aria-labelledby="analyzer-heading">
+      <h2 id="analyzer-heading">🔐 Analyzer</h2>
+      <label class="field-label" for="password-input">Password to analyze</label>
+      <div class="password-row">
+        <input id="password-input" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type a password…" />
+        <button id="toggle-visibility" type="button" aria-pressed="false">Show</button>
+      </div>
+
+      <div class="meter" role="meter" aria-label="Password strength">
+        <div id="meter-fill" class="meter-fill" data-score="0"></div>
+      </div>
+      <div class="meter-meta">
+        <strong id="meter-label">—</strong>
+        <span>Entropy: <strong id="entropy-value">—</strong></span>
+      </div>
+
+      <dl class="stats">
+        <div>
+          <dt>Estimated crack time</dt>
+          <dd id="crack-value">—</dd>
+        </div>
+        <div>
+          <dt>Assumption</dt>
+          <dd>Offline fast-hash attack at 10 billion guesses/second (average case).</dd>
+        </div>
+      </dl>
+
+      <h3>Findings &amp; fixes</h3>
+      <ul id="findings-list" class="findings"></ul>
+    </section>
+
+    <section class="card glass" aria-labelledby="generator-heading">
+      <h2 id="generator-heading">🦇 Generator</h2>
+
+      <div class="mode-tabs" role="tablist" aria-label="Generator mode">
+        <button id="mode-password" type="button" class="active">Password</button>
+        <button id="mode-passphrase" type="button">Passphrase</button>
+      </div>
+
+      <div id="password-options">
+        <label class="field-label" for="gen-length">Length: <strong id="gen-length-value">16</strong></label>
+        <input id="gen-length" type="range" min="8" max="64" value="16" />
+        <div class="checks">
+          <label><input id="opt-lowercase" type="checkbox" checked /> Lowercase (a–z)</label>
+          <label><input id="opt-uppercase" type="checkbox" checked /> Uppercase (A–Z)</label>
+          <label><input id="opt-digits" type="checkbox" checked /> Digits (0–9)</label>
+          <label><input id="opt-symbols" type="checkbox" checked /> Symbols (!@#$…)</label>
+          <label><input id="opt-ambiguous" type="checkbox" /> Exclude ambiguous (Il1O0)</label>
+        </div>
+      </div>
+
+      <div id="passphrase-options" hidden>
+        <label class="field-label" for="phrase-words">Word count</label>
+        <input id="phrase-words" type="number" min="3" max="10" value="4" />
+        <label class="field-label" for="phrase-separator">Separator</label>
+        <select id="phrase-separator">
+          <option value="-" selected>Hyphen (-)</option>
+          <option value="_">Underscore (_)</option>
+          <option value=".">Dot (.)</option>
+          <option value=" ">Space</option>
+        </select>
+        <div class="checks">
+          <label><input id="phrase-capitalize" type="checkbox" /> Capitalize words</label>
+          <label><input id="phrase-number" type="checkbox" /> Add a number</label>
+        </div>
+      </div>
+
+      <label class="field-label" for="gen-output">Generated</label>
+      <input id="gen-output" type="text" readonly autocomplete="off" spellcheck="false" />
+      <div class="actions">
+        <button id="generate-btn" type="button" class="primary">Generate</button>
+        <button id="copy-btn" type="button">Copy</button>
+        <button id="use-generated" type="button">Analyze this</button>
+      </div>
+      <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+      <p class="hint">Randomness comes from <code>crypto.getRandomValues</code> with rejection sampling — no biased modulo shortcuts.</p>
+    </section>
+  </main>
+
+  <section class="card glass how">
+    <h2>How it works</h2>
+    <ul>
+      <li><strong>Entropy</strong> is estimated from charset size × length, then reduced for predictable patterns: sequences, keyboard walks, repeats, years/dates, and common passwords (including leetspeak variants like <code>p@ssw0rd</code>).</li>
+      <li><strong>Crack time</strong> assumes an offline fast-hash attack at 10 billion guesses/second — a deliberately harsh, attacker-friendly assumption.</li>
+      <li><strong>Privacy:</strong> passwords never leave the browser, nothing is stored, and there are no network calls, accounts, or trackers.</li>
+    </ul>
+  </section>
+
+  <footer class="site-footer">
+    <p>crypt-keeper by Lavish Gangwar (Vempire) · MIT License · Passwords never leave the browser — nothing is stored.</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
